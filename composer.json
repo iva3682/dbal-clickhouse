@@ -1,5 +1,5 @@
 {
-    "name": "xeops/dbal-clickhouse",
+    "name": "brlabrussia/dbal-clickhouse",
     "type": "library",
     "description": "Doctrine DBAL driver for ClickHouse",
     "keywords": [
@@ -8,7 +8,7 @@
         "clickhouse",
         "driver"
     ],
-    "homepage": "https://github.com/xeops/dbal-clickhouse",
+    "homepage": "https://github.com/brlabrussia/dbalClickhouse",
     "license": "MIT",
     "authors": [
         {
@@ -22,6 +22,10 @@
         {
             "name": "Alexei Generalov",
             "email": "xeops123@mail.ru"
+        },
+        {
+            "name": ".fry",
+            "email": "fry@6dreams.net"
         }
     ],
     "require": {
