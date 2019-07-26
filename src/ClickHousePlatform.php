@@ -633,6 +633,13 @@ class ClickHousePlatform extends AbstractPlatform
      */
     protected function _getCreateTableSQL($tableName, array $columns, array $options = []) : array
     {
+        // Crutch for migrations (возможно можно сделать как-то нормальнее).
+        if ('migration_versions' === $tableName) {
+            $options['eventDateColumn'] = 'executed_at';
+            $options['engine']          = 'MergeTree';
+            $options['primary']         = ['version'];
+        }
+
         $engine        = ! empty($options['engine']) ? $options['engine'] : 'ReplacingMergeTree';
         $engineOptions = '';
 
@@ -706,7 +713,7 @@ class ClickHousePlatform extends AbstractPlatform
             }
             if (empty($options['eventDateColumn'])) {
                 $dateColumns = array_filter($columns, function ($column) {
-                    return $column['type'] instanceof DateType;
+                    return $column['type'] instanceof DateType || $column['type'] instanceof DateTimeType;
                 });
 
                 if ($dateColumns) {
@@ -722,7 +729,8 @@ class ClickHousePlatform extends AbstractPlatform
 
                 $eventDateColumnName = 'EventDate';
             } elseif (isset($columns[$options['eventDateColumn']])) {
-                if (! ($columns[$options['eventDateColumn']]['type'] instanceof DateType)) {
+                $idxColumn = $columns[$options['eventDateColumn']]['type'];
+                if (! ($idxColumn instanceof DateType || $idxColumn instanceof DateTimeType)) {
                     throw new \Exception(
                         'In table `' . $tableName . '` you have set field `' .
                         $options['eventDateColumn'] .
@@ -732,6 +740,7 @@ class ClickHousePlatform extends AbstractPlatform
                 }
 
                 $eventDateColumnName = $options['eventDateColumn'];
+                $dateColumnParams = $columns[$options['eventDateColumn']];
                 unset($columns[$options['eventDateColumn']]);
             } else {
                 $eventDateColumnName = $options['eventDateColumn'];
@@ -792,18 +801,23 @@ class ClickHousePlatform extends AbstractPlatform
             }
 
             $engineOptions .= ')';
+
+            $versionColumnValue = '';
+            if (\array_key_exists('versionColumn', $options)) {
+                $versionColumnValue = \sprintf('[\'%s\']', $columns[$options['versionColumn']]['name']);
+            }
 			//TODO поддержка парционирования через определение таблицы
 	        $sql[] = sprintf(
-		        'CREATE TABLE IF NOT EXISTS  %s (%s) ENGINE = %s([\'%s\']) PARTITION BY toYYYYMM(%s) ORDER BY (%s) SETTINGS index_granularity=%s',
+		        'CREATE TABLE IF NOT EXISTS %s (%s) ENGINE = %s(%s) PARTITION BY toYYYYMM(%s) ORDER BY (%s) SETTINGS index_granularity=%s',
 		        $tableName,
 		        $this->getColumnDeclarationListSQL($columns),
 		        $engine,
-		        $columns[$options['versionColumn']]['name'],
+                $versionColumnValue,
 		        $eventDateColumnName,
 		        implode(', ', array_unique($primaryIndex)),
 		        $indexGranularity
 	        );
-	        if($options['buffered'] === true)
+	        if(($options['buffered'] ?? false) === true)
 	        {
 		        //Buffer(database, table, num_layers, min_time, max_time, min_rows, max_rows, min_bytes, max_bytes)
 		        $sql[] = sprintf(

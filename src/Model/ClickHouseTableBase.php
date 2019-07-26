@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ageneralov
- * Date: 05.06.2018
- * Time: 16:04
- */
+declare(strict_types = 1);
 
 namespace FOD\DBALClickHouse\Model;
-
 
 use Doctrine\Common\Annotations\AnnotationReader;
 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ageneralov
- * Date: 05.06.2018
- * Time: 21:25
- */
+declare(strict_types = 1);
 
 namespace FOD\DBALClickHouse\Mapping;
 

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -29,76 +29,80 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * {@inheritDoc}
      */
-    public function executeUpdate($query, array $params = [], array $types = []) : int
+    public function executeUpdate($query, array $params = [], array $types = []): int
     {
-    	$query = str_replace(" SET ", " UPDATE ", str_replace("UPDATE ", " ", $query));
-    	foreach ($types as &$type)
-    	{
-    		$type = $type === 'float' ? 'integer' : $type;
-	    }
-    	return parent::executeUpdate("ALTER TABLE {$query}", $params, $types);
+        $query = str_replace(" SET ", " UPDATE ", str_replace("UPDATE ", " ", $query));
+        foreach ($types as &$type) {
+            $type = $type === 'float' ? 'integer' : $type;
+        }
+        if (\stripos($query, 'CREATE TABLE') === false && \stripos($query, 'INSERT INTO') === false) {
+            return parent::executeUpdate("ALTER TABLE {$query}", $params, $types);
+        } else {
+            return parent::executeUpdate($query, $params, $types);
+        }
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-    public function delete($tableExpression, array $identifier, array $types = []) : int
+    /**
+     * {@inheritDoc}
+     */
+    public function delete($tableExpression, array $identifier, array $types = []): int
     {
-	    if (empty($identifier)) {
-		    throw InvalidArgumentException::fromEmptyCriteria();
-	    }
+        if (empty($identifier)) {
+            throw InvalidArgumentException::fromEmptyCriteria();
+        }
 
-	    list($columns, $values, $conditions) = $this->gatherConditions($identifier);
+        list($columns, $values, $conditions) = $this->gatherConditions($identifier);
 
-	    return $this->executeUpdate(
-		    $tableExpression . ' DELETE WHERE ' . implode(' AND ', $conditions),
-		    $values,
-		    is_string(key($types)) ? $this->extractTypeValues($columns, $types) : $types
-	    );
-
+        return $this->executeUpdate(
+            $tableExpression . ' DELETE WHERE ' . implode(' AND ', $conditions),
+            $values,
+            is_string(key($types)) ? $this->extractTypeValues($columns, $types) : $types
+        );
     }
-	/**
-	 * Extract ordered type list from an ordered column list and type map.
-	 *
-	 * @param array $columnList
-	 * @param array $types
-	 *
-	 * @return array
-	 */
-	private function extractTypeValues(array $columnList, array $types)
-	{
-		$typeValues = [];
 
-		foreach ($columnList as $columnIndex => $columnName) {
-			$typeValues[] = $types[$columnName] ?? ParameterType::STRING;
-		}
+    /**
+     * Extract ordered type list from an ordered column list and type map.
+     *
+     * @param array $columnList
+     * @param array $types
+     *
+     * @return array
+     */
+    private function extractTypeValues(array $columnList, array $types)
+    {
+        $typeValues = [];
 
-		return $typeValues;
-	}
+        foreach ($columnList as $columnIndex => $columnName) {
+            $typeValues[] = $types[$columnName] ?? ParameterType::STRING;
+        }
 
-	private function gatherConditions(array $identifiers)
-	{
-		$columns = [];
-		$values = [];
-		$conditions = [];
+        return $typeValues;
+    }
 
-		foreach ($identifiers as $columnName => $value) {
-			if (null === $value) {
-				$conditions[] = $this->getDatabasePlatform()->getIsNullExpression($columnName);
-				continue;
-			}
+    private function gatherConditions(array $identifiers)
+    {
+        $columns    = [];
+        $values     = [];
+        $conditions = [];
 
-			$columns[] = $columnName;
-			$values[] = $value;
-			$conditions[] = $columnName . ' = ?';
-		}
+        foreach ($identifiers as $columnName => $value) {
+            if (null === $value) {
+                $conditions[] = $this->getDatabasePlatform()->getIsNullExpression($columnName);
+                continue;
+            }
 
-		return [$columns, $values, $conditions];
-	}
+            $columns[]    = $columnName;
+            $values[]     = $value;
+            $conditions[] = $columnName . ' = ?';
+        }
+
+        return [$columns, $values, $conditions];
+    }
+
     /**
      * @throws DBALException
      */
-    public function update($tableExpression, array $data, array $identifier, array $types = []) : void
+    public function update($tableExpression, array $data, array $identifier, array $types = []): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -110,7 +114,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function setTransactionIsolation($level) : void
+    public function setTransactionIsolation($level): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -118,7 +122,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function getTransactionIsolation() : void
+    public function getTransactionIsolation(): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -126,7 +130,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function getTransactionNestingLevel() : void
+    public function getTransactionNestingLevel(): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -134,7 +138,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function transactional(\Closure $func) : void
+    public function transactional(\Closure $func): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -142,7 +146,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function setNestTransactionsWithSavepoints($nestTransactionsWithSavepoints) : void
+    public function setNestTransactionsWithSavepoints($nestTransactionsWithSavepoints): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -150,7 +154,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function getNestTransactionsWithSavepoints() : void
+    public function getNestTransactionsWithSavepoints(): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -158,39 +162,31 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function beginTransaction() : void
+    public function beginTransaction(): void
     {
-	     return;
+        return;
     }
 
     /**
      * @throws DBALException
      */
-    public function commit() : void
+    public function commit(): void
     {
-      return;
+        return;
     }
 
     /**
      * @throws DBALException
      */
-    public function rollBack() : void
+    public function rollBack(): void
     {
-      return;
+        return;
     }
 
     /**
      * @throws DBALException
      */
-    public function createSavepoint($savepoint) : void
-    {
-        throw DBALException::notSupported(__METHOD__);
-    }
-
-    /**
-     * @throws DBALException
-     */
-    public function releaseSavepoint($savepoint) : void
+    public function createSavepoint($savepoint): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -198,7 +194,15 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function rollbackSavepoint($savepoint) : void
+    public function releaseSavepoint($savepoint): void
+    {
+        throw DBALException::notSupported(__METHOD__);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rollbackSavepoint($savepoint): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -206,7 +210,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function setRollbackOnly() : void
+    public function setRollbackOnly(): void
     {
         throw DBALException::notSupported(__METHOD__);
     }
@@ -214,7 +218,7 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * @throws DBALException
      */
-    public function isRollbackOnly() : void
+    public function isRollbackOnly(): void
     {
         throw DBALException::notSupported(__METHOD__);
     }

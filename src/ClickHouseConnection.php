@@ -51,10 +51,8 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
             'port' => $params['port'] ?? 8123,
             'username' => $username,
             'password' => $password,
-            'settings' => array_merge([
-                'database' => $params['dbname'] ?? 'default',
-            ], $params['driverOptions'] ?? []),
-        ]);
+            'settings' => $params['driverOptions'] ?? []
+        ], ['database' => $params['dbname'] ?? 'default']);
 
         $this->platform = $platform;
     }
@@ -84,7 +82,7 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
      */
     public function quote($input, $type = ParameterType::STRING)
     {
-        if ($type === ParameterType::INTEGER) {
+        if (ParameterType::INTEGER === $type) {
             return $input;
         }
 

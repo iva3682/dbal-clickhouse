@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ageneralov
- * Date: 05.06.2018
- * Time: 20:56
- */
+declare(strict_types = 1);
 
 namespace FOD\DBALClickHouse\Mapping;
 
@@ -17,5 +12,4 @@ use Doctrine\ORM\Mapping\Annotation;
  */
 final class EventDateColumn implements Annotation
 {
-
 }
