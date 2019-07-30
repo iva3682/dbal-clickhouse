@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -17,15 +16,21 @@ namespace FOD\DBALClickHouse\Types;
 /**
  * Array(Float32) Type
  */
-class ArrayFloat32Type extends ArrayType implements BitNumericalClickHouseType
+class ArrayFloat32Type extends AbstractArrayType implements BitNumericalClickHouseTypeInterface
 {
-    public function getBits() : int
+    /**
+     * @inheritdoc
+     */
+    public function getBits(): int
     {
-        return BitNumericalClickHouseType::THIRTY_TWO_BIT;
+        return BitNumericalClickHouseTypeInterface::THIRTY_TWO_BIT;
     }
 
-    public function getBaseClickHouseType() : string
+    /**
+     * @inheritdoc
+     */
+    public function getBaseClickHouseType(): string
     {
-        return NumericalClickHouseType::TYPE_FLOAT;
+        return NumericalClickHouseTypeInterface::TYPE_FLOAT;
     }
 }

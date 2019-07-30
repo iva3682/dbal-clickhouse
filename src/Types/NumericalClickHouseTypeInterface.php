@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -14,8 +13,11 @@ declare(strict_types=1);
 
 namespace FOD\DBALClickHouse\Types;
 
-interface DatableClickHouseType extends ClickHouseType
+/**
+ * Numberical ClickHouse types.
+ */
+interface NumericalClickHouseTypeInterface extends ClickHouseTypeInterface
 {
-    public const TYPE_DATE      = 'Date';
-    public const TYPE_DATE_TIME = 'DateTime';
+    public const TYPE_INT   = 'Int';
+    public const TYPE_FLOAT = 'Float';
 }

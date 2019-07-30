@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -25,7 +24,7 @@ class BigIntType extends \Doctrine\DBAL\Types\BigIntType
     /**
      * {@inheritdoc}
      */
-    public function getBindingType() : int
+    public function getBindingType(): int
     {
         return ParameterType::INTEGER;
     }
@@ -41,7 +40,7 @@ class BigIntType extends \Doctrine\DBAL\Types\BigIntType
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return (empty($fieldDeclaration['unsigned']) ? '' : 'U') . 'Int64';
     }

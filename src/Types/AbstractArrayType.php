@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -17,14 +16,11 @@ namespace FOD\DBALClickHouse\Types;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use function array_key_exists;
-use function sprintf;
-use function strtolower;
 
 /**
  * Array(*) Types basic class
  */
-abstract class ArrayType extends Type implements ClickHouseType
+abstract class AbstractArrayType extends Type implements ClickHouseTypeInterface
 {
     protected const ARRAY_TYPES = [
         'array(int8)' => ArrayInt8Type::class,
@@ -44,6 +40,8 @@ abstract class ArrayType extends Type implements ClickHouseType
 
     /**
      * Register Array types to the type map.
+     *
+     * @param AbstractPlatform $platform
      *
      * @throws DBALException
      */
@@ -82,22 +80,24 @@ abstract class ArrayType extends Type implements ClickHouseType
      */
     public function getName() : string
     {
-        return strtolower($this->getDeclaration());
+        return \strtolower($this->getDeclaration());
     }
 
     /**
-     * @param mixed[] $fieldDeclaration
+     * @param array $fieldDeclaration
+     *
+     * @return string
      */
     protected function getDeclaration(array $fieldDeclaration = []) : string
     {
-        return sprintf(
-            array_key_exists(
+        return \sprintf(
+            \array_key_exists(
                 'notnull',
                 $fieldDeclaration
             ) && $fieldDeclaration['notnull'] === false ? 'Array(Nullable(%s%s%s))' : 'Array(%s%s%s)',
-            $this instanceof UnsignedNumericalClickHouseType ? 'U' : '',
+            $this instanceof UnsignedNumericalClickHouseTypeInterface ? 'U' : '',
             $this->getBaseClickHouseType(),
-            $this instanceof BitNumericalClickHouseType ? $this->getBits() : ''
+            $this instanceof BitNumericalClickHouseTypeInterface ? $this->getBits() : ''
         );
     }
 }

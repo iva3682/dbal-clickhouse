@@ -21,8 +21,6 @@ use Doctrine\DBAL\Driver\PingableConnection;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use function array_merge;
-use function func_get_args;
 
 /**
  * ClickHouse implementation for the Connection interface.
@@ -36,9 +34,12 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
     protected $platform;
 
     /**
-     * Connection constructor
+     * Constructor.
      *
-     * @param mixed[] $params
+     * @param array            $params
+     * @param string           $username
+     * @param string           $password
+     * @param AbstractPlatform $platform
      */
     public function __construct(
         array $params,
@@ -46,13 +47,18 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
         string $password,
         AbstractPlatform $platform
     ) {
-        $this->smi2CHClient = new Smi2CHClient([
-            'host' => $params['host'] ?? 'localhost',
-            'port' => $params['port'] ?? 8123,
-            'username' => $username,
-            'password' => $password,
-            'settings' => $params['driverOptions'] ?? []
-        ], ['database' => $params['dbname'] ?? 'default']);
+        $this->smi2CHClient = new Smi2CHClient(
+            [
+                'host' => $params['host'] ?? 'localhost',
+                'port' => $params['port'] ?? 8123,
+                'username' => $username,
+                'password' => $password,
+                'settings' => $params['driverOptions'] ?? []
+            ],
+            [
+                'database' => $params['dbname'] ?? 'default'
+            ]
+        );
 
         $this->platform = $platform;
     }
@@ -70,7 +76,7 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
      */
     public function query()
     {
-        $args = func_get_args();
+        $args = \func_get_args();
         $stmt = $this->prepare($args[0]);
         $stmt->execute();
 

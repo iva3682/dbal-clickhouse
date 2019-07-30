@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -14,8 +13,10 @@ declare(strict_types=1);
 
 namespace FOD\DBALClickHouse\Types;
 
-interface NumericalClickHouseType extends ClickHouseType
+/**
+ * All unsigned clickhouse types.
+ */
+interface UnsignedNumericalClickHouseTypeInterface extends NumericalClickHouseTypeInterface
 {
-    public const TYPE_INT   = 'Int';
-    public const TYPE_FLOAT = 'Float';
+    public const UNSIGNED_CHAR = 'U';
 }

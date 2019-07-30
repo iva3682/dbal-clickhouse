@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -16,17 +15,18 @@ namespace FOD\DBALClickHouse\Types;
 
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use function array_map;
-use function implode;
 
 /**
  * Array(String) Type class
  */
-class ArrayStringType extends ArrayType implements StringClickHouseType
+class ArrayStringType extends AbstractArrayType implements StringClickHouseTypeInterface
 {
+    /**
+     * @inheritdoc
+     */
     public function getBaseClickHouseType() : string
     {
-        return StringClickHouseType::TYPE_STRING;
+        return StringClickHouseTypeInterface::TYPE_STRING;
     }
 
     /**
@@ -34,10 +34,10 @@ class ArrayStringType extends ArrayType implements StringClickHouseType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return '[' . implode(
+        return '[' . \implode(
             ', ',
-            array_map(
-                function (string $value) use ($platform) {
+            \array_map(
+                static function (string $value) use ($platform) {
                         return $platform->quoteStringLiteral($value);
                 },
                 (array) $value

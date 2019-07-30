@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -17,33 +16,31 @@ namespace FOD\DBALClickHouse;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\DBAL\ParameterType;
-use function strtoupper;
-use function substr;
-use function trim;
+use Doctrine\DBAL\Connection as BaseConnection;
 
 /**
  * ClickHouse Connection
  */
-class Connection extends \Doctrine\DBAL\Connection
+class Connection extends BaseConnection
 {
     /**
      * {@inheritDoc}
      */
     public function executeUpdate($query, array $params = [], array $types = []): int
     {
-        $query = str_replace(" SET ", " UPDATE ", str_replace("UPDATE ", " ", $query));
+        $query = \str_replace(' SET ', ' UPDATE ', \str_replace('UPDATE ', ' ', $query));
         foreach ($types as &$type) {
             $type = $type === 'float' ? 'integer' : $type;
-        }
+        } unset($type);
         if (\stripos($query, 'CREATE TABLE') === false && \stripos($query, 'INSERT INTO') === false) {
-            return parent::executeUpdate("ALTER TABLE {$query}", $params, $types);
-        } else {
-            return parent::executeUpdate($query, $params, $types);
+            return parent::executeUpdate('ALTER TABLE ' . $query, $params, $types);
         }
+
+        return parent::executeUpdate($query, $params, $types);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($tableExpression, array $identifier, array $types = []): int
     {
@@ -51,56 +48,17 @@ class Connection extends \Doctrine\DBAL\Connection
             throw InvalidArgumentException::fromEmptyCriteria();
         }
 
-        list($columns, $values, $conditions) = $this->gatherConditions($identifier);
+        [$columns, $values, $conditions] = $this->gatherConditions($identifier);
 
         return $this->executeUpdate(
-            $tableExpression . ' DELETE WHERE ' . implode(' AND ', $conditions),
+            $tableExpression . ' DELETE WHERE ' . \implode(' AND ', $conditions),
             $values,
-            is_string(key($types)) ? $this->extractTypeValues($columns, $types) : $types
+            \is_string(\key($types)) ? $this->extractTypeValues($columns, $types) : $types
         );
     }
 
     /**
-     * Extract ordered type list from an ordered column list and type map.
-     *
-     * @param array $columnList
-     * @param array $types
-     *
-     * @return array
-     */
-    private function extractTypeValues(array $columnList, array $types)
-    {
-        $typeValues = [];
-
-        foreach ($columnList as $columnIndex => $columnName) {
-            $typeValues[] = $types[$columnName] ?? ParameterType::STRING;
-        }
-
-        return $typeValues;
-    }
-
-    private function gatherConditions(array $identifiers)
-    {
-        $columns    = [];
-        $values     = [];
-        $conditions = [];
-
-        foreach ($identifiers as $columnName => $value) {
-            if (null === $value) {
-                $conditions[] = $this->getDatabasePlatform()->getIsNullExpression($columnName);
-                continue;
-            }
-
-            $columns[]    = $columnName;
-            $values[]     = $value;
-            $conditions[] = $columnName . ' = ?';
-        }
-
-        return [$columns, $values, $conditions];
-    }
-
-    /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function update($tableExpression, array $data, array $identifier, array $types = []): void
     {
@@ -112,7 +70,7 @@ class Connection extends \Doctrine\DBAL\Connection
      */
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function setTransactionIsolation($level): void
     {
@@ -120,7 +78,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function getTransactionIsolation(): void
     {
@@ -128,7 +86,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function getTransactionNestingLevel(): void
     {
@@ -136,7 +94,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function transactional(\Closure $func): void
     {
@@ -144,7 +102,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function setNestTransactionsWithSavepoints($nestTransactionsWithSavepoints): void
     {
@@ -152,7 +110,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function getNestTransactionsWithSavepoints(): void
     {
@@ -160,31 +118,28 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function beginTransaction(): void
     {
-        return;
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function commit(): void
     {
-        return;
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function rollBack(): void
     {
-        return;
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function createSavepoint($savepoint): void
     {
@@ -192,7 +147,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function releaseSavepoint($savepoint): void
     {
@@ -208,7 +163,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function setRollbackOnly(): void
     {
@@ -216,10 +171,56 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @throws DBALException
+     * @inheritdoc
      */
     public function isRollbackOnly(): void
     {
         throw DBALException::notSupported(__METHOD__);
+    }
+
+    /**
+     * Extract ordered type list from an ordered column list and type map.
+     *
+     * @param array $columnList
+     * @param array $types
+     *
+     * @return array
+     */
+    protected function extractTypeValues(array $columnList, array $types)
+    {
+        $typeValues = [];
+
+        foreach ($columnList as $columnName) {
+            $typeValues[] = $types[$columnName] ?? ParameterType::STRING;
+        }
+
+        return $typeValues;
+    }
+
+    /**
+     * Collect conditions.
+     *
+     * @param array $identifiers
+     *
+     * @return array
+     */
+    protected function gatherConditions(array $identifiers): array
+    {
+        $columns = [];
+        $values = [];
+        $conditions = [];
+
+        foreach ($identifiers as $columnName => $value) {
+            if (null === $value) {
+                $conditions[] = $this->getDatabasePlatform()->getIsNullExpression($columnName);
+                continue;
+            }
+
+            $columns[] = $columnName;
+            $values[] = $value;
+            $conditions[] = $columnName . ' = ?';
+        }
+
+        return [$columns, $values, $conditions];
     }
 }

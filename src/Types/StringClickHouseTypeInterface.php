@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -14,7 +13,11 @@ declare(strict_types=1);
 
 namespace FOD\DBALClickHouse\Types;
 
-interface ClickHouseType
+/**
+ * ClickHouse string types.
+ */
+interface StringClickHouseTypeInterface extends ClickHouseTypeInterface
 {
-    public function getBaseClickHouseType() : string;
+    public const TYPE_STRING       = 'String';
+    public const TYPE_FIXED_STRING = 'FixedString';
 }

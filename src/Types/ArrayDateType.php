@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -16,18 +15,19 @@ namespace FOD\DBALClickHouse\Types;
 
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use function array_filter;
-use function array_map;
-use function implode;
+
 
 /**
  * Array(Date) Type class
  */
-class ArrayDateType extends ArrayType implements DatableClickHouseType
+class ArrayDateType extends AbstractArrayType implements DatableClickHouseTypeInterface
 {
-    public function getBaseClickHouseType() : string
+    /**
+     * @inheritdoc
+     */
+    public function getBaseClickHouseType(): string
     {
-        return DatableClickHouseType::TYPE_DATE;
+        return DatableClickHouseTypeInterface::TYPE_DATE;
     }
 
     /**
@@ -35,8 +35,8 @@ class ArrayDateType extends ArrayType implements DatableClickHouseType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return array_map(
-            function ($stringDatetime) use ($platform) {
+        return \array_map(
+            static function ($stringDatetime) use ($platform) {
                 return \DateTime::createFromFormat($platform->getDateFormatString(), $stringDatetime);
             },
             (array) $value
@@ -48,15 +48,15 @@ class ArrayDateType extends ArrayType implements DatableClickHouseType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return '[' . implode(
+        return '[' . \implode(
             ', ',
-            array_map(
-                function (\DateTime $datetime) use ($platform) {
+            \array_map(
+                static function (\DateTime $datetime) use ($platform) {
                     return "'" . $datetime->format($platform->getDateFormatString()) . "'";
                 },
-                array_filter(
+                \array_filter(
                     (array) $value,
-                    function ($datetime) {
+                    static function ($datetime) {
                         return $datetime instanceof \DateTime;
                     }
                 )
@@ -67,7 +67,7 @@ class ArrayDateType extends ArrayType implements DatableClickHouseType
     /**
      * {@inheritDoc}
      */
-    public function getBindingType() : int
+    public function getBindingType(): int
     {
         return ParameterType::INTEGER;
     }

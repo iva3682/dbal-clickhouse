@@ -1,21 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ageneralov
- * Date: 2019-02-18
- * Time: 09:46
- */
+declare(strict_types = 1);
 
 namespace FOD\DBALClickHouse\Types;
 
-
 use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\FloatType as BaseFloatType;
 
-class FloatType extends \Doctrine\DBAL\Types\FloatType
+/**
+ * ClickHouse float type.
+ */
+class FloatType extends BaseFloatType
 {
-	public function getBindingType()
-	{
-		return ParameterType::INTEGER;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getBindingType()
+    {
+        return ParameterType::INTEGER;
+    }
 }

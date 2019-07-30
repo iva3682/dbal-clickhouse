@@ -1,18 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ageneralov
- * Date: 2019-02-15
- * Time: 17:03
- */
+declare(strict_types = 1);
 
 namespace FOD\DBALClickHouse\Types;
 
-
+/**
+ * DateTime object that supports __toString(), because UoW reqiure it in identifier.
+ */
 class DateTimeToString extends \DateTime
 {
-	public function __toString()
-	{
-		return $this->format("Y-m-d");
-	}
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return $this->format('U');
+    }
 }

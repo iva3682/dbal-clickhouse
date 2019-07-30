@@ -16,18 +16,18 @@ namespace FOD\DBALClickHouse\Types;
 
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use function array_filter;
-use function array_map;
-use function implode;
 
 /**
  * Array(DateTime) Type class
  */
-class ArrayDateTimeType extends ArrayType implements DatableClickHouseType
+class ArrayDateTimeType extends AbstractArrayType implements DatableClickHouseTypeInterface
 {
-    public function getBaseClickHouseType() : string
+    /**
+     * @inheritdoc
+     */
+    public function getBaseClickHouseType(): string
     {
-        return DatableClickHouseType::TYPE_DATE_TIME;
+        return DatableClickHouseTypeInterface::TYPE_DATE_TIME;
     }
 
     /**
@@ -35,8 +35,8 @@ class ArrayDateTimeType extends ArrayType implements DatableClickHouseType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return array_map(
-            function ($stringDatetime) use ($platform) {
+        return \array_map(
+            static function ($stringDatetime) use ($platform) {
                 return \DateTime::createFromFormat($platform->getDateTimeFormatString(), $stringDatetime);
             },
             (array) $value
@@ -48,15 +48,15 @@ class ArrayDateTimeType extends ArrayType implements DatableClickHouseType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return '[' . implode(
+        return '[' . \implode(
             ', ',
-            array_map(
-                function (\DateTime $datetime) use ($platform) {
+            \array_map(
+                static function (\DateTime $datetime) use ($platform) {
                     return "'" . $datetime->format($platform->getDateTimeFormatString()) . "'";
                 },
-                array_filter(
+                \array_filter(
                     (array) $value,
-                    function ($datetime) {
+                    static function ($datetime) {
                         return $datetime instanceof \DateTime;
                     }
                 )

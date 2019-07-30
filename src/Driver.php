@@ -15,26 +15,27 @@ declare(strict_types=1);
 namespace FOD\DBALClickHouse;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver as BaseDriver;
 
 /**
  * ClickHouse Driver
  */
-class Driver implements \Doctrine\DBAL\Driver
+class Driver implements BaseDriver
 {
     /**
      * {@inheritDoc}
      */
     public function connect(array $params, $user = null, $password = null, array $driverOptions = [])
     {
-        if ($user === null) {
-            if (! isset($params['user'])) {
+        if (null === $user) {
+            if (!isset($params['user'])) {
                 throw new ClickHouseException('Connection parameter `user` is required');
             }
 
             $user = $params['user'];
         }
 
-        if ($password === null) {
+        if (null === $password) {
             if (! isset($params['password'])) {
                 throw new ClickHouseException('Connection parameter `password` is required');
             }
@@ -42,15 +43,15 @@ class Driver implements \Doctrine\DBAL\Driver
             $password = $params['password'];
         }
 
-        if (! isset($params['host'])) {
+        if (!isset($params['host'])) {
             throw new ClickHouseException('Connection parameter `host` is required');
         }
 
-        if (! isset($params['port'])) {
+        if (!isset($params['port'])) {
             throw new ClickHouseException('Connection parameter `port` is required');
         }
 
-        if (! isset($params['dbname'])) {
+        if (!isset($params['dbname'])) {
             throw new ClickHouseException('Connection parameter `dbname` is required');
         }
 
@@ -87,10 +88,7 @@ class Driver implements \Doctrine\DBAL\Driver
     public function getDatabase(Connection $conn)
     {
         $params = $conn->getParams();
-        if (isset($params['dbname'])) {
-            return $params['dbname'];
-        }
 
-        return $conn->fetchColumn('SELECT currentDatabase() as dbname');
+        return $params['dbname'] ?? $conn->fetchColumn('SELECT currentDatabase() AS dbname');
     }
 }

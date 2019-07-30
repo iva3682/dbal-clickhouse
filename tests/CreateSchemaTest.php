@@ -16,7 +16,7 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Types\Type;
 use FOD\DBALClickHouse\ClickHouseSchemaManager;
 use FOD\DBALClickHouse\Connection;
-use FOD\DBALClickHouse\Types\ArrayType;
+use FOD\DBALClickHouse\Types\AbstractArrayType;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -317,7 +317,7 @@ class CreateSchemaTest extends TestCase
     public function testNullableColumns()
     {
         $fromSchema = $this->connection->getSchemaManager()->createSchema();
-        ArrayType::registerArrayTypes($this->connection->getDatabasePlatform());
+        AbstractArrayType::registerArrayTypes($this->connection->getDatabasePlatform());
 
         $toSchema = clone $fromSchema;
 

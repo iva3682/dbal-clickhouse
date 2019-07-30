@@ -12,7 +12,7 @@ Driver is suitable for Symfony or any other framework using Doctrine.
 ## Installation
 
 ```
-composer require friendsofdoctrine/dbal-clickhouse
+composer require brlabrussia/dbal-clickhouse
 ```
 
 ## Initialization
@@ -247,7 +247,7 @@ doctrine:
             array(string): FOD\DBALClickHouse\Types\ArrayStringType
             array(datetime): FOD\DBALClickHouse\Types\ArrayDateTimeType
             array(date): FOD\DBALClickHouse\Types\ArrayDateType
-	    date_id: FOD\DBALClickHouse\Types\DateIdType # ovverided type for unique hash
+            date_id: FOD\DBALClickHouse\Types\DateIdType # ovverided type for unique hash
             float: FOD\DBALClickHouse\Types\FloatType # type dismatch, because standart driver set float to string
 ```
 
@@ -271,9 +271,12 @@ doctrine:
 * [SQL Query Builder](http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/query-builder.html)
 * [Schema-Representation](http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html)
 
-
-# ClickHouse Bundle
-бандл для работы с библиотекой Yandex ClickHouse
+### Doctrine Entity Manager
+```php
+$registry = $this->getContainer()->get(RegistryInterface::class);
+$manager = $registry->getManager('clickhouse');
+$manager->getRepository(YourEntity::class);
+```
 
 ### Основные потребности в бандле
 
@@ -281,6 +284,8 @@ doctrine:
     - возможность задавать аннотации подобно ORM/Doctrine
     - возможность единой схемы создания таблиц из аннотаций
     - возможность вставки и выборки данных без задания явных запросов
+    - поддержка миграций
+    - nullable работает для всех типов
 
 
 #### Аннотация таблиц
