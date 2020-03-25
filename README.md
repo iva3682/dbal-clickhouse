@@ -273,7 +273,7 @@ doctrine:
 
 ### Doctrine Entity Manager
 ```php
-$registry = $this->getContainer()->get(RegistryInterface::class);
+$registry = $this->getContainer()->get(ManagerRegistry::class);
 $manager = $registry->getManager('clickhouse');
 $manager->getRepository(YourEntity::class);
 ```
