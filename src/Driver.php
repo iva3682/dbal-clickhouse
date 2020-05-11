@@ -51,10 +51,6 @@ class Driver implements BaseDriver
             throw new ClickHouseException('Connection parameter `port` is required');
         }
 
-        if (!isset($params['dbname'])) {
-            throw new ClickHouseException('Connection parameter `dbname` is required');
-        }
-
         return new ClickHouseConnection($params, (string) $user, (string) $password, $this->getDatabasePlatform());
     }
 
