@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /*
  * This file is part of the FODDBALClickHouse package -- Doctrine DBAL library
@@ -32,6 +32,11 @@ class Connection extends BaseConnection
         foreach ($types as &$type) {
             $type = $type === 'float' ? 'integer' : $type;
         } unset($type);
+
+        if (\stripos(\trim($query), 'DELETE FROM') === 0) {
+            return parent::executeUpdate(\preg_replace('/DELETE FROM (.*?) /', 'ALTER TABLE ${1} DELETE ', $query), $params, $types);
+        }
+
         if (\stripos($query, 'CREATE TABLE') === false && \stripos($query, 'INSERT INTO') === false) {
             return parent::executeUpdate('ALTER TABLE ' . $query, $params, $types);
         }
