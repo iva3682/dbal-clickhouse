@@ -33,6 +33,10 @@ class Connection extends BaseConnection
             $type = $type === 'float' ? 'integer' : $type;
         } unset($type);
 
+        if (\stripos(\trim($query), 'DROP ') === 0) {
+            return parent::executeUpdate($query, $params, $types);
+        }
+
         if (\stripos(\trim($query), 'DELETE FROM') === 0) {
             return parent::executeUpdate(\preg_replace('/DELETE FROM (.*?) /', 'ALTER TABLE ${1} DELETE ', $query), $params, $types);
         }
