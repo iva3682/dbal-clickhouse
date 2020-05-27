@@ -41,7 +41,7 @@ class Connection extends BaseConnection
             return parent::executeUpdate(\preg_replace('/DELETE FROM (.*?) /', 'ALTER TABLE ${1} DELETE ', $query), $params, $types);
         }
 
-        if (\stripos($query, 'CREATE TABLE') === false && \stripos($query, 'INSERT INTO') === false) {
+        if (\stripos($query, 'CREATE ') === false && \stripos($query, 'INSERT INTO') === false) {
             return parent::executeUpdate('ALTER TABLE ' . $query, $params, $types);
         }
 
