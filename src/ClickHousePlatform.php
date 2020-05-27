@@ -1096,7 +1096,11 @@ class ClickHousePlatform extends AbstractPlatform
      */
     public function getCreateDatabaseSQL($database): string
     {
-        return 'CREATE DATABASE ' . $this->quoteIdentifier($database);
+        if (\strpos($database, '`') === false) {
+            $database = $this->quoteIdentifier($database);
+        }
+
+        return 'CREATE DATABASE ' . $database;
     }
 
     /**
