@@ -71,7 +71,6 @@ class Connection extends BaseConnection
      */
     public function update($tableExpression, array $data, array $identifier, array $types = []): void
     {
-        throw DBALException::notSupported(__METHOD__);
     }
 
     /**
