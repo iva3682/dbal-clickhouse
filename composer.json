@@ -1,52 +1,55 @@
 {
-    "name": "iva3682/dbal-clickhouse",
-    "type": "library",
-    "description": "Doctrine DBAL driver for ClickHouse",
-    "keywords": [
-        "doctrine",
-        "dbal",
-        "clickhouse",
-        "driver"
-    ],
-    "homepage": "https://github.com/brlabrussia/dbalClickhouse",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Mochalygin Aleksandr",
-            "email": "a@mochalygin.ru"
-        },
-        {
-            "name": "Mitrofanov Nikolay",
-            "email": "mitrofanovnk@yandex.ru"
-        },
-        {
-            "name": "Alexei Generalov",
-            "email": "xeops123@mail.ru"
-        },
-        {
-            "name": ".fry",
-            "email": "fry@6dreams.net"
-        }
-    ],
-    "require": {
-        "php": "^7.1",
-        "ext-PDO": "*",
-        "ext-pcre": "*",
-        "doctrine/dbal": "^2.7",
-        "smi2/phpclickhouse": "^1.0"
+  "name": "iva3682/dbal-clickhouse",
+  "type": "library",
+  "description": "Doctrine DBAL driver for ClickHouse",
+  "keywords": [
+    "doctrine",
+    "dbal",
+    "clickhouse",
+    "driver"
+  ],
+  "homepage": "https://github.com/brlabrussia/dbalClickhouse",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mochalygin Aleksandr",
+      "email": "a@mochalygin.ru"
     },
-    "require-dev": {
-        "doctrine/coding-standard": "^4.0",
-        "phpunit/phpunit": "^7.0"
+    {
+      "name": "Mitrofanov Nikolay",
+      "email": "mitrofanovnk@yandex.ru"
     },
-    "autoload": {
-        "psr-4": {
-            "FOD\\DBALClickHouse\\": "src/"
-        }
+    {
+      "name": "Alexei Generalov",
+      "email": "xeops123@mail.ru"
     },
-    "autoload-dev": {
-        "psr-4": {
-            "FOD\\DBALClickHouse\\Tests\\": "tests/"
-        }
+    {
+      "name": ".fry",
+      "email": "fry@6dreams.net"
+    },
+    {
+      "name": "iva3682",
+      "email": "iva3682@yandex.ru"
     }
+  ],
+  "require": {
+    "php": "^7.1",
+    "ext-PDO": "*",
+    "ext-pcre": "*",
+    "doctrine/dbal": "^2.7",
+    "smi2/phpclickhouse": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "FOD\\DBALClickHouse\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FOD\\DBALClickHouse\\Tests\\": "tests/"
+    }
+  }
 }

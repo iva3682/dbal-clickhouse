@@ -801,12 +801,11 @@ class ClickHousePlatform extends AbstractPlatform
             }
 			//TODO поддержка парционирования через определение таблицы
 	        $sql[] = \sprintf(
-		        'CREATE TABLE IF NOT EXISTS %s (%s) ENGINE = %s(%s) PARTITION BY toYYYYMM(%s) ORDER BY (%s) SETTINGS index_granularity=%s',
+		        'CREATE TABLE IF NOT EXISTS %s (%s) ENGINE = %s(%s) ORDER BY (%s) SETTINGS index_granularity=%s',
 		        $tableName,
 		        $this->getColumnDeclarationListSQL($columns),
 		        $engine,
                 $versionColumnValue,
-		        $eventDateColumnName,
 		        \implode(', ', \array_unique($primaryIndex)),
 		        $indexGranularity
 	        );

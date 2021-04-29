@@ -6,3 +6,8 @@ phpunit.xml
 Vagrantfile
 puphpet/
 .vagrant/
+
+/*.sln
+/*.phpproj.user
+/.vs
+/*.phpproj
