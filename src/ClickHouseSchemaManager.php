@@ -56,6 +56,17 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
             ];
         }
 
+        if(preg_match('/ORDER\s+BY\s+[(]*([\w,\s]+)[)]*/is', $tableView->getSql(), $match)) {
+            return [
+                new Index(
+                    \current(\array_reverse(\explode('.', $table))) . '__pk',
+                    $match[1],
+                    false,
+                    true
+                ),
+            ];
+        }
+
         return [];
     }
 
@@ -84,7 +95,6 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
         }
 
         if (\strncasecmp($columnType, 'string', 6) === 0) {
-            // get length from FixedString definition
             $length = 0;
         }
 
