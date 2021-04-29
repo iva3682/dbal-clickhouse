@@ -83,6 +83,11 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
             $fixed  = true;
         }
 
+        if (\strncasecmp($columnType, 'string', 6) === 0) {
+            // get length from FixedString definition
+            $length = 0;
+        }
+
         $unsigned = false;
         if (\strncasecmp($columnType, 'uint', 4) === 0) {
             $unsigned = true;
