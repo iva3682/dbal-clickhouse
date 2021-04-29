@@ -56,11 +56,18 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
             ];
         }
 
-        if(preg_match('/ORDER\s+BY\s+[(]*([\w,\s]+)[)]*/is', $tableView->getSql(), $match)) {
+        if(preg_match('/ORDER\s+BY\s+[(]*([\w,\s]+)[)]*[\s+](?:SETTINGS|TTL|SAMPLE|PRIMARY|PARTITION)/isU', $tableView->getSql(), $match)) {
+            $indexColumns = \array_filter(
+                \array_map('trim', \explode(',', $match[1])),
+                static function (string $column) {
+                    return \strpos($column, '(') === false;
+                }
+            );
+
             return [
                 new Index(
                     \current(\array_reverse(\explode('.', $table))) . '__pk',
-                    $match[1],
+                    $indexColumns,
                     false,
                     true
                 ),
