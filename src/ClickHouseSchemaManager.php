@@ -151,6 +151,10 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
      */
     protected function _getPortableTableDefinition($table)
     {
+        if(strncasecmp($table['name'], '.inner.', 7)) {
+            return '';
+        }
+
         return $table['name'];
     }
 
