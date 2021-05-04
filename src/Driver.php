@@ -16,6 +16,7 @@ namespace FOD\DBALClickHouse;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver as BaseDriver;
+use ClickHouseDB\Client as Smi2CHClient;
 
 /**
  * ClickHouse Driver
@@ -86,5 +87,13 @@ class Driver implements BaseDriver
         $params = $conn->getParams();
 
         return $params['dbname'] ?? $conn->fetchColumn('SELECT currentDatabase() AS dbname');
+    }
+
+    /**
+     * Summary of getClient
+     * @return null|Smi2CHClient
+     */
+    public function getClient(): Smi2CHClient {
+        return $this->getClient();
     }
 }
