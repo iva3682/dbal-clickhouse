@@ -151,6 +151,10 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
      */
     protected function _getPortableTableDefinition($table)
     {
+        if(strncasecmp($table['name'], '.inner.', 7) === 0) {
+            return '';
+        }
+
         return $table['name'];
     }
 
@@ -159,7 +163,7 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
      */
     protected function _getPortableViewDefinition($view)
     {
-        $statement = $this->_conn->fetchColumn('SHOW CREATE TABLE ' . $view['name']);
+        $statement = $this->_conn->fetchColumn('SHOW CREATE TABLE `' . $view['name'] . '`');
 
         return new View($view['name'], $statement);
     }
