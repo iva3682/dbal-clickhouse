@@ -707,6 +707,7 @@ class ClickHousePlatform extends AbstractPlatform
                         ('toDate(toDateTime(' . $options['eventDateProviderColumn'] . '))') :
                         ('toDate(' . $options['eventDateProviderColumn'] . ')');
             }
+
             if (empty($options['eventDateColumn'])) {
                 $dateColumns = \array_filter($columns, static function ($column) {
                     return $column['type'] instanceof DateType || $column['type'] instanceof DateTimeType;
@@ -718,7 +719,7 @@ class ClickHousePlatform extends AbstractPlatform
                             '`, `',
                             \array_keys($dateColumns)
                         ) .
-                        '`, but no one of them is setted as `eventDateColumn` with 
+                        '`, but no one of them is setted as `eventDateColumn` with
                         $table->addOption("eventDateColumn", "%eventDateColumnName%")'
                     );
                 }
@@ -772,7 +773,7 @@ class ClickHousePlatform extends AbstractPlatform
             if (($engine === 'ReplacingMergeTree' || $engine ==='CollapsingMergeTree') && ! empty($options['versionColumn'])) {
                 if (! isset($columns[$options['versionColumn']])) {
                     throw new ClickHouseException(
-                        'If you specify `versionColumn` for ReplacingMergeTree table -- 
+                        'If you specify `versionColumn` for ReplacingMergeTree table --
                         you must add this column manually (any of UInt*, Date or DateTime types)'
                     );
                 }
@@ -784,7 +785,7 @@ class ClickHousePlatform extends AbstractPlatform
                     ! $columns[$options['versionColumn']]['type'] instanceof DateTimeType
                 ) {
                     throw new ClickHouseException(
-                        'For ReplacingMergeTree tables `versionColumn` must be any of UInt* family, 
+                        'For ReplacingMergeTree tables `versionColumn` must be any of UInt* family,
                         or Date, or DateTime types. ' .
                         \get_class($columns[$options['versionColumn']]['type']) . ' given.'
                     );
@@ -797,17 +798,28 @@ class ClickHousePlatform extends AbstractPlatform
 
             $versionColumnValue = '';
             if (\array_key_exists('versionColumn', $options)) {
-                $versionColumnValue = \sprintf('[\'%s\']', $columns[$options['versionColumn']]['name']);
+                $versionColumnValue = \sprintf('%s', $columns[$options['versionColumn']]['name']);
             }
+
+            $partitionColumn = isset($options['partitionColumn']) ? 'PARTITION BY ' . $options['partitionColumn'] : '';
+            $orderByColumn = isset($options['orderByColumn']) ? $options['orderByColumn'] : $primaryIndex;
+            $TTLColumn = isset($options['TTLColumn']) ? 'TTL ' . $options['TTLColumn'] : '';
+            $tableType = isset($options['viewQuery']) ? 'MATERIALIZED VIEW' : 'TABLE';
+            $viewQuery = isset($options['viewQuery']) ? 'AS ' . $options['viewQuery'] : '';
+
 			//TODO поддержка парционирования через определение таблицы
 	        $sql[] = \sprintf(
-		        'CREATE TABLE IF NOT EXISTS %s (%s) ENGINE = %s(%s) ORDER BY (%s) SETTINGS index_granularity=%s',
+		        'CREATE %s IF NOT EXISTS %s (%s) ENGINE = %s(%s) ORDER BY (%s) %s %s SETTINGS index_granularity=%s %s',
+                $tableType,
 		        $tableName,
 		        $this->getColumnDeclarationListSQL($columns),
 		        $engine,
                 $versionColumnValue,
-		        \implode(', ', \array_unique($primaryIndex)),
-		        $indexGranularity
+		        implode(', ', array_unique($orderByColumn)),
+                $partitionColumn,
+                $TTLColumn,
+		        $indexGranularity,
+                $viewQuery
 	        );
 	        if(($options['buffered'] ?? false) === true)
 	        {
