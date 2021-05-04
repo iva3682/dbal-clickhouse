@@ -263,13 +263,24 @@ class ClickHouseStatement implements \IteratorAggregate, Statement
             });
             $sql = \implode('', $statementParts);
         } else {
+            $offset = 0;
+
             foreach (\array_keys($this->values) as $key) {
-                $sql = \preg_replace(
-                    '/(' . (\is_int($key) ? '\?' : ':' . $key) . ')/i',
-                    $this->getTypedParam($key),
-                    $sql,
-                    1
-                );
+                if(\is_int($key)) {
+                    $place = strpos($sql, '?', $offset);
+                    $v = $this->getTypedParam($key);
+
+                    $sql = substr_replace($sql, $v, $place, 1);
+                    $offset = $place + strlen($v);
+                }
+                else {
+                    $sql = \preg_replace(
+                        '/(:' . $key . ')/i',
+                        $this->getTypedParam($key),
+                        $sql,
+                        1
+                    );
+                }
             }
         }
 
