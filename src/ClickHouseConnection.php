@@ -181,4 +181,8 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
     {
         return true;
     }
+
+    public function getClientSMI(): ?Smi2CHClient {
+        return $this->smi2CHClient;
+    }
 }
