@@ -198,6 +198,8 @@ class ClickHousePlatform extends AbstractPlatform
             'array(nullable(string))' => 'array',
             'array(nullable(date))' => 'array',
             'array(nullable(datetime))' => 'array',
+
+            'uuid' => 'guid',
         ];
     }
 
